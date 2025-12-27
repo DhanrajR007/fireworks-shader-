@@ -7,7 +7,7 @@ import gsap from "gsap";
  * Base
  */
 const gui = new GUI();
-const canvas = document.querySelector("canvas.webgl");
+const canvas = document.querySelector("#canvas");
 const scene = new THREE.Scene();
 
 /**
