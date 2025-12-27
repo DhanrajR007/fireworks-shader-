@@ -2,6 +2,8 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import GUI from "lil-gui";
 import gsap from "gsap";
+import vertexShader from "./shaders/fireworks/vertex.glsl";
+import fragmentShader from "./shaders/fireworks/fragment.glsl";
 
 /**
  * Base
@@ -16,10 +18,26 @@ const scene = new THREE.Scene();
 const textureLoader = new THREE.TextureLoader();
 
 /**
+ * Sizes
+ */
+const sizes = {
+  width: window.innerWidth,
+  height: window.innerHeight,
+};
+
+sizes.resolution = new THREE.Vector2(sizes.width, sizes.height);
+
+/**
  * Object
  */
 const geometry = new THREE.BufferGeometry();
-const material = new THREE.PointsMaterial({});
+const material = new THREE.ShaderMaterial({
+  vertexShader: vertexShader,
+  fragmentShader: fragmentShader,
+  uniforms: {
+    uResolution: new THREE.Uniform(sizes.resolution),
+  },
+});
 
 //createFirecracker
 const createFirework = (count, position) => {
@@ -41,22 +59,17 @@ const createFirework = (count, position) => {
   scene.add(firework);
 };
 
-createFirework(100, new THREE.Vector3(0, 0, 0));
-
 // Debug
 // gui.add(cube.position, "y").min(-3).max(3).step(0.01).name("elevation");
 
-/**
- * Sizes
- */
-const sizes = {
-  width: window.innerWidth,
-  height: window.innerHeight,
-};
+// createFirework calling
+createFirework(100, new THREE.Vector3(0, 0, 0));
 
 window.addEventListener("resize", () => {
   sizes.width = window.innerWidth;
   sizes.height = window.innerHeight;
+
+  sizes.resolution.set(sizes.width, sizes.height);
 
   camera.aspect = sizes.width / sizes.height;
   camera.updateProjectionMatrix();
