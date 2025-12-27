@@ -44,14 +44,25 @@ sizes.resolution = new THREE.Vector2(
 );
 
 //createFirecracker
-const createFirework = (count, position, size, texture) => {
+const createFirework = (count, positions, size, texture, radius, color) => {
   const positionArray = new Float32Array(count * 3);
+  const sizeArray = new Float32Array(count);
+
+  // const positions = new THREE.Vector3();
 
   for (let i = 0; i < count; i++) {
+    const spherical = new THREE.Spherical(
+      radius * (0.75 + Math.random() * 0.25),
+      Math.random() * Math.PI,
+      Math.random() * Math.PI * 2
+    );
+    const positions = new THREE.Vector3();
+    positions.setFromSpherical(spherical);
     const i3 = i * 3;
-    positionArray[i3 + 0] = Math.random() - 0.5;
-    positionArray[i3 + 1] = Math.random() - 0.5;
-    positionArray[i3 + 2] = Math.random() - 0.5;
+    positionArray[i3 + 0] = positions.x;
+    positionArray[i3 + 1] = positions.y;
+    positionArray[i3 + 2] = positions.z;
+    sizeArray[i] = Math.random();
   }
   texture.flipY = false;
   /**
@@ -66,6 +77,7 @@ const createFirework = (count, position, size, texture) => {
       uSize: new THREE.Uniform(size),
       uResolution: new THREE.Uniform(sizes.resolution),
       uTexture: new THREE.Uniform(texture),
+      uColor: new THREE.Uniform(color),
     },
     transparent: true,
     depthWrite: false,
@@ -73,26 +85,28 @@ const createFirework = (count, position, size, texture) => {
   });
 
   const firework = new THREE.Points(geometry, material);
-  firework.position.copy(position);
+  firework.position.copy(positions);
   scene.add(firework);
 
   geometry.setAttribute(
     "position",
     new THREE.BufferAttribute(positionArray, 3)
   );
+  geometry.setAttribute("aSize", new THREE.BufferAttribute(sizeArray, 1));
 };
-
-const test = new THREE.Mesh(
-  new THREE.PlaneGeometry(1, 1),
-  new THREE.MeshBasicMaterial({ color: "#fff" })
-);
-scene.add(test);
 
 // Debug
 // gui.add(cube.position, "y").min(-3).max(3).step(0.01).name("elevation");
 
 // createFirework calling
-createFirework(100, new THREE.Vector3(), 50.0, textures[1]);
+createFirework(
+  100, //count
+  new THREE.Vector3(), //position
+  0.2, //size
+  textures[8], //texture
+  1, //radius
+  new THREE.Color("#8affff")
+);
 
 window.addEventListener("resize", () => {
   sizes.width = window.innerWidth;
