@@ -17,30 +17,36 @@ const scene = new THREE.Scene();
  */
 const textureLoader = new THREE.TextureLoader();
 
+const textures = [
+  textureLoader.load("./circle_01.png"),
+  textureLoader.load("./circle_02.png"),
+  textureLoader.load("./light_01.png"),
+  textureLoader.load("./magic_02.png"),
+  textureLoader.load("./star_05.png"),
+  textureLoader.load("./star_07.png"),
+  textureLoader.load("./symbol_01.png"),
+  textureLoader.load("./symbol_02.png"),
+];
+textures.forEach((texture) => {
+  texture.flipY = false;
+});
+
 /**
  * Sizes
  */
 const sizes = {
   width: window.innerWidth,
   height: window.innerHeight,
+  pixelRatio: Math.min(window.devicePixelRatio, 2),
 };
 
-sizes.resolution = new THREE.Vector2(sizes.width, sizes.height);
-
-/**
- * Object
- */
-const geometry = new THREE.BufferGeometry();
-const material = new THREE.ShaderMaterial({
-  vertexShader: vertexShader,
-  fragmentShader: fragmentShader,
-  uniforms: {
-    uResolution: new THREE.Uniform(sizes.resolution),
-  },
-});
+sizes.resolution = new THREE.Vector2(
+  sizes.width * sizes.pixelRatio,
+  sizes.height * sizes.pixelRatio
+);
 
 //createFirecracker
-const createFirework = (count, position) => {
+const createFirework = (count, position, size, texture) => {
   const positionArray = new Float32Array(count * 3);
 
   for (let i = 0; i < count; i++) {
@@ -49,33 +55,54 @@ const createFirework = (count, position) => {
     positionArray[i3 + 1] = Math.random() - 0.5;
     positionArray[i3 + 2] = Math.random() - 0.5;
   }
-  geometry.setAttribute(
-    "position",
-    new THREE.BufferAttribute(positionArray, 3)
-  );
+
+  /**
+   * Object
+   */
+  const geometry = new THREE.BufferGeometry();
+  const material = new THREE.ShaderMaterial({
+    vertexShader: vertexShader,
+    fragmentShader: fragmentShader,
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+    uniforms: {
+      uSize: new THREE.Uniform(size),
+      uResolution: new THREE.Uniform(sizes.resolution),
+      uTexture: new THREE.Uniform(texture),
+    },
+  });
 
   const firework = new THREE.Points(geometry, material);
   firework.position.copy(position);
   scene.add(firework);
+
+  geometry.setAttribute(
+    "position",
+    new THREE.BufferAttribute(positionArray, 3)
+  );
 };
 
 // Debug
 // gui.add(cube.position, "y").min(-3).max(3).step(0.01).name("elevation");
 
 // createFirework calling
-createFirework(100, new THREE.Vector3(0, 0, 0));
+createFirework(100, new THREE.Vector3(0, 0, 0), 80, textures[0]);
 
 window.addEventListener("resize", () => {
   sizes.width = window.innerWidth;
   sizes.height = window.innerHeight;
-
-  sizes.resolution.set(sizes.width, sizes.height);
+  sizes.pixelRatio = Math.min(window.devicePixelRatio, 2);
+  sizes.resolution.set(
+    sizes.width * sizes.pixelRatio,
+    sizes.height * sizes.pixelRatio
+  );
 
   camera.aspect = sizes.width / sizes.height;
   camera.updateProjectionMatrix();
 
   renderer.setSize(sizes.width, sizes.height);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setPixelRatio(sizes.pixelRatio);
 });
 
 /**
