@@ -18,18 +18,16 @@ const scene = new THREE.Scene();
 const textureLoader = new THREE.TextureLoader();
 
 const textures = [
-  textureLoader.load("./circle_01.png"),
-  textureLoader.load("./circle_02.png"),
-  textureLoader.load("./light_01.png"),
-  textureLoader.load("./magic_02.png"),
-  textureLoader.load("./star_05.png"),
-  textureLoader.load("./star_07.png"),
-  textureLoader.load("./symbol_01.png"),
-  textureLoader.load("./symbol_02.png"),
+  textureLoader.load("./circle.png"),
+  textureLoader.load("../assets/circle_01.png"),
+  textureLoader.load("../assets/circle_02.png"),
+  textureLoader.load("../assets/light_01.png"),
+  textureLoader.load("../assets/magic_02.png"),
+  textureLoader.load("../assets/star_05.png"),
+  textureLoader.load("../assets/star_07.png"),
+  textureLoader.load("../assets/symbol_01.png"),
+  textureLoader.load("../assets/symbol_02.png"),
 ];
-textures.forEach((texture) => {
-  texture.flipY = false;
-});
 
 /**
  * Sizes
@@ -55,7 +53,7 @@ const createFirework = (count, position, size, texture) => {
     positionArray[i3 + 1] = Math.random() - 0.5;
     positionArray[i3 + 2] = Math.random() - 0.5;
   }
-
+  texture.flipY = false;
   /**
    * Object
    */
@@ -63,14 +61,15 @@ const createFirework = (count, position, size, texture) => {
   const material = new THREE.ShaderMaterial({
     vertexShader: vertexShader,
     fragmentShader: fragmentShader,
-    transparent: true,
-    depthWrite: false,
-    blending: THREE.AdditiveBlending,
+
     uniforms: {
       uSize: new THREE.Uniform(size),
       uResolution: new THREE.Uniform(sizes.resolution),
       uTexture: new THREE.Uniform(texture),
     },
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
   });
 
   const firework = new THREE.Points(geometry, material);
@@ -83,11 +82,17 @@ const createFirework = (count, position, size, texture) => {
   );
 };
 
+const test = new THREE.Mesh(
+  new THREE.PlaneGeometry(1, 1),
+  new THREE.MeshBasicMaterial({ color: "#fff" })
+);
+scene.add(test);
+
 // Debug
 // gui.add(cube.position, "y").min(-3).max(3).step(0.01).name("elevation");
 
 // createFirework calling
-createFirework(100, new THREE.Vector3(0, 0, 0), 80, textures[0]);
+createFirework(100, new THREE.Vector3(), 50.0, textures[1]);
 
 window.addEventListener("resize", () => {
   sizes.width = window.innerWidth;
@@ -128,6 +133,8 @@ controls.enableDamping = true;
  */
 const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
+  antialias: true,
+  // alpha: true,
 });
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
