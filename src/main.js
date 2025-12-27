@@ -18,13 +18,33 @@ const textureLoader = new THREE.TextureLoader();
 /**
  * Object
  */
-const geometry = new THREE.BoxGeometry(1, 1, 1);
-const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-const cube = new THREE.Mesh(geometry, material);
-scene.add(cube);
+const geometry = new THREE.BufferGeometry();
+const material = new THREE.PointsMaterial({});
+
+//createFirecracker
+const createFirework = (count, position) => {
+  const positionArray = new Float32Array(count * 3);
+
+  for (let i = 0; i < count; i++) {
+    const i3 = i * 3;
+    positionArray[i3 + 0] = Math.random() - 0.5;
+    positionArray[i3 + 1] = Math.random() - 0.5;
+    positionArray[i3 + 2] = Math.random() - 0.5;
+  }
+  geometry.setAttribute(
+    "position",
+    new THREE.BufferAttribute(positionArray, 3)
+  );
+
+  const firework = new THREE.Points(geometry, material);
+  firework.position.copy(position);
+  scene.add(firework);
+};
+
+createFirework(100, new THREE.Vector3(0, 0, 0));
 
 // Debug
-gui.add(cube.position, "y").min(-3).max(3).step(0.01).name("elevation");
+// gui.add(cube.position, "y").min(-3).max(3).step(0.01).name("elevation");
 
 /**
  * Sizes
