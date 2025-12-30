@@ -78,6 +78,7 @@ const createFirework = (count, positions, size, texture, radius, color) => {
       uResolution: new THREE.Uniform(sizes.resolution),
       uTexture: new THREE.Uniform(texture),
       uColor: new THREE.Uniform(color),
+      uProgess: new THREE.Uniform(0),
     },
     transparent: true,
     depthWrite: false,
@@ -93,20 +94,23 @@ const createFirework = (count, positions, size, texture, radius, color) => {
     new THREE.BufferAttribute(positionArray, 3)
   );
   geometry.setAttribute("aSize", new THREE.BufferAttribute(sizeArray, 1));
+
+  //distroy firework
+  const destroyFirework = () => {
+    scene.remove(firework);
+    geometry.dispose();
+    material.dispose();
+  };
+
+  //GSAP Animation
+  gsap.to(material.uniforms.uProgess, {
+    duration: 3,
+    value: 1,
+    ease: "linear",
+    onComplete: destroyFirework,
+  });
 };
-
-// Debug
-// gui.add(cube.position, "y").min(-3).max(3).step(0.01).name("elevation");
-
 // createFirework calling
-createFirework(
-  100, //count
-  new THREE.Vector3(), //position
-  0.2, //size
-  textures[8], //texture
-  1, //radius
-  new THREE.Color("#8affff")
-);
 
 window.addEventListener("resize", () => {
   sizes.width = window.innerWidth;
@@ -136,6 +140,17 @@ const camera = new THREE.PerspectiveCamera(
 camera.position.z = 3;
 scene.add(camera);
 
+window.addEventListener("click", () => {
+  createFirework(
+    100, //count
+    new THREE.Vector3(), //position
+    0.2, //size
+    textures[8], //texture
+    1, //radius
+    new THREE.Color("#8affff")
+  );
+});
+
 /**
  * Controls
  */
@@ -152,6 +167,9 @@ const renderer = new THREE.WebGLRenderer({
 });
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+// Debug
+// gui.add(cube.position, "y").min(-3).max(3).step(0.01).name("elevation");
 
 /**
  * Animate
