@@ -78,7 +78,7 @@ const createFirework = (count, positions, size, texture, radius, color) => {
       uResolution: new THREE.Uniform(sizes.resolution),
       uTexture: new THREE.Uniform(texture),
       uColor: new THREE.Uniform(color),
-      uProgess: new THREE.Uniform(0),
+      uProgress: new THREE.Uniform(0),
     },
     transparent: true,
     depthWrite: false,
@@ -103,14 +103,25 @@ const createFirework = (count, positions, size, texture, radius, color) => {
   };
 
   //GSAP Animation
-  gsap.to(material.uniforms.uProgess, {
+  gsap.to(material.uniforms.uProgress, {
     duration: 3,
     value: 1,
     ease: "linear",
     onComplete: destroyFirework,
   });
 };
+
 // createFirework calling
+window.addEventListener("click", () => {
+  createFirework(
+    100, //count
+    new THREE.Vector3(), //position
+    0.2, //size
+    textures[8], //texture
+    1, //radius
+    new THREE.Color("#8affff")
+  );
+});
 
 window.addEventListener("resize", () => {
   sizes.width = window.innerWidth;
@@ -139,17 +150,6 @@ const camera = new THREE.PerspectiveCamera(
 );
 camera.position.z = 3;
 scene.add(camera);
-
-window.addEventListener("click", () => {
-  createFirework(
-    100, //count
-    new THREE.Vector3(), //position
-    0.2, //size
-    textures[8], //texture
-    1, //radius
-    new THREE.Color("#8affff")
-  );
-});
 
 /**
  * Controls
