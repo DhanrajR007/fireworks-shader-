@@ -47,6 +47,7 @@ sizes.resolution = new THREE.Vector2(
 const createFirework = (count, positions, size, texture, radius, color) => {
   const positionArray = new Float32Array(count * 3);
   const sizeArray = new Float32Array(count);
+  const timeMultipliersArray = new Float32Array(count);
 
   // const positions = new THREE.Vector3();
 
@@ -63,6 +64,7 @@ const createFirework = (count, positions, size, texture, radius, color) => {
     positionArray[i3 + 1] = positions.y;
     positionArray[i3 + 2] = positions.z;
     sizeArray[i] = Math.random();
+    timeMultipliersArray[i] = 1 + Math.random();
   }
   texture.flipY = false;
   /**
@@ -94,6 +96,10 @@ const createFirework = (count, positions, size, texture, radius, color) => {
     new THREE.BufferAttribute(positionArray, 3)
   );
   geometry.setAttribute("aSize", new THREE.BufferAttribute(sizeArray, 1));
+  geometry.setAttribute(
+    "aTimeMultiplier",
+    new THREE.BufferAttribute(timeMultipliersArray, 1)
+  );
 
   //distroy firework
   const destroyFirework = () => {
@@ -111,16 +117,24 @@ const createFirework = (count, positions, size, texture, radius, color) => {
   });
 };
 
+const randomFirework = () => {
+  const count = Math.round(300 + Math.random() * 600);
+  const position = new THREE.Vector3(
+    (Math.random() - 0.5) * 2,
+    Math.random(),
+    (Math.random() - 0.5) * 2
+  );
+  const size = 0.1 + Math.random() * 0.1;
+  const texture = textures[Math.floor(Math.random() * textures.length)];
+  const color = new THREE.Color();
+  color.setHSL(Math.random(), 1.0, 0.7);
+  const radius = 0.5 + Math.random();
+  createFirework(count, position, size, texture, radius, color);
+};
+
 // createFirework calling
 window.addEventListener("click", () => {
-  createFirework(
-    100, //count
-    new THREE.Vector3(), //position
-    0.2, //size
-    textures[8], //texture
-    1, //radius
-    new THREE.Color("#8affff")
-  );
+  randomFirework();
 });
 
 window.addEventListener("resize", () => {

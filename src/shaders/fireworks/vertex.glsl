@@ -4,6 +4,7 @@ uniform float uProgress;
 
 
 attribute float aSize;
+attribute float aTimeMultiplier;
 
 
 float remap(float value, float originMin, float originMax, float destinationMin, float destinationMax)
@@ -13,36 +14,37 @@ float remap(float value, float originMin, float originMax, float destinationMin,
 
 void main()
 {
-
+    float progress = uProgress * aTimeMultiplier;
     vec3 newPosition = position;
 
     //Exploding Progress
-    float ExplodingProgress = remap(uProgress, 0.0, 0.1, 0.0, 1.0);
+    float ExplodingProgress = remap(progress, 0.0, 0.1, 0.0, 1.0);
     ExplodingProgress = clamp(ExplodingProgress , 0.0 , 1.0);
     ExplodingProgress = 1.0- pow(1.0-ExplodingProgress , 3.0);
     newPosition *= ExplodingProgress;
 
 
     //Falling down
-    float FallingProgress =  remap(uProgress, 0.1, 1.0, 0.0, 1.0);
+    float FallingProgress =  remap(progress, 0.1, 1.0, 0.0, 1.0);
     FallingProgress = clamp(FallingProgress , 0.0 , 1.0);
     FallingProgress = 1.0- pow(1.0-FallingProgress , 3.0);
     newPosition.y -= FallingProgress * 0.2;
 
     //Scalling 
 
-    float sizeOpening = remap(uProgress,0.0,0.125,0.0,1.0);
-    float sizeClosing = remap(uProgress,0.125,1.0,1.0,0.0);
+    float sizeOpening = remap(progress,0.0,0.125,0.0,1.0);
+    float sizeClosing = remap(progress,0.125,1.0,1.0,0.0);
     float sizeProgress = min(sizeOpening,sizeClosing);
     sizeProgress = clamp(sizeProgress,0.0,1.0);
 
     // twinkling 
 
-    float twinklingProgress = remap(uProgress,0.2,0.8,0.0,1.0);
+    float twinklingProgress = remap(progress,0.2,0.8,0.0,1.0);
     twinklingProgress= clamp(twinklingProgress,0.0,1.0);
 
-    float sizeTwinkling = sin(uProgress* 30.0);
+    float sizeTwinkling = sin(progress* 30.0);
     sizeTwinkling = 1.0 - sizeTwinkling * twinklingProgress;
+
 
 
 
